@@ -1,0 +1,9 @@
+[package]
+name = "batcher-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+derive_more = { version = "1.0.0", features = ["from"] }
