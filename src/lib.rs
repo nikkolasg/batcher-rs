@@ -19,8 +19,12 @@ pub trait Unit: Debug + Clone + Send + Sync {
 pub trait Batcher {
     type Unit: Unit;
 
-    /// new_unit adds a new unit to the batch. The return enum indicates whether the batch is ready
+    /// new_unit adds a new unit to the batch. The return enum indicates whether the batch is
+    /// ready.
     fn new_unit(&mut self, unit: Self::Unit) -> Option<Vec<Self::Unit>>;
+    /// release the whole pending batch regardless if it is full or not. Sometimes necessary when
+    /// for example some timeout expired.
+    fn release(self) -> Vec<Self::Unit>;
 }
 
 /// An enum implementing various batching strategies. User can implement its own strategy by
@@ -113,6 +117,10 @@ where
             BatchStatus::KeepBatching => None,
             BatchStatus::ReleaseBatch => Some(self.backend.release()),
         }
+    }
+
+    fn release(mut self) -> Vec<Self::Unit> {
+        self.backend.release()
     }
 }
 
