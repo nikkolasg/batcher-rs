@@ -80,19 +80,18 @@ impl From<bool> for BatchStatus {
 
 impl<ID> PolicyKind<ID>
 where
-    ID: Eq + std::hash::Hash,
+    ID: Eq + std::hash::Hash + Clone,
 {
     fn outcome<U: Unit<ID = ID>>(&self, batch: &VecBatcher<U>) -> BatchStatus {
         match self {
             PolicyKind::BySize(max_size) => BatchStatus::from(batch.pending.len() >= *max_size),
-            PolicyKind::ByList(ref set) => BatchStatus::from(
-                &batch
-                    .pending
-                    .iter()
-                    .map(|u| u.id())
-                    .collect::<HashSet<ID>>()
-                    == set,
-            ),
+            PolicyKind::ByList(ref set) => {
+                let mut local_set = set.clone();
+                for unit in &batch.pending {
+                    local_set.remove(&unit.id());
+                }
+                BatchStatus::from(local_set.is_empty())
+            }
         }
     }
 }
