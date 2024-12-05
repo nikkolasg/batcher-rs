@@ -51,7 +51,7 @@ enum BatchStatus {
 
 /// VecBatcher is a simple implementation of the Batcher trait backed by a vector.
 #[derive(Default)]
-struct VecBatcher<U> {
+pub struct VecBatcher<U> {
     pending: Vec<U>,
 }
 
