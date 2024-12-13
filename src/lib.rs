@@ -29,7 +29,8 @@ pub trait Batcher {
 
 /// An enum implementing various batching strategies. User can implement its own strategy by
 /// implementing the `Policy` trait.
-pub enum PolicyKind<ID> {
+#[derive(Debug, Clone)]
+pub enum PolicyKind<ID: Debug + Clone> {
     BySize(usize),
     ByList(HashSet<ID>),
 }
@@ -80,7 +81,7 @@ impl From<bool> for BatchStatus {
 
 impl<ID> PolicyKind<ID>
 where
-    ID: Eq + std::hash::Hash + Clone,
+    ID: Eq + std::hash::Hash + Clone + Debug,
 {
     fn outcome<U: Unit<ID = ID>>(&self, batch: &VecBatcher<U>) -> BatchStatus {
         match self {
